@@ -1,6 +1,7 @@
 package woowhahan.dgswchat.global.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,7 +44,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity handleValidationExceptions(MethodArgumentNotValidException e) {
+    protected ResponseEntity handleValidationException(MethodArgumentNotValidException e) {
         return ResponseEntity
                 .status(400)
                 .body(ErrorResponseEntity.builder()
@@ -51,7 +52,17 @@ public class GlobalExceptionHandler {
                         .code("NOT_VALID_EXCEPTION")
                         .message(e.getBindingResult().getFieldError().getDefaultMessage())
                         .build());
+    }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity
+                .status(400)
+                .body(ErrorResponseEntity.builder()
+                        .status(400)
+                        .code("DATA_INTEGRITY_VIOLATION_EXCEPTION")
+                        .message("데이터 무결성 위반 에러입니다 요청에 문제가 있을 수 있습니다")
+                        .build());
     }
 
 }
